@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wordle Helper</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Wordle Helper</h1>
+
+    <!-- Suggested Guess -->
+    <div id="suggested-guess">
+        Suggested Guess: <span id="suggestion">salet</span>
+    </div>
+
+    <!-- User Input Section -->
+    <div id="guess-input">
+        <label for="user-guess">Enter Your Guess:</label>
+        <input type="text" id="user-guess" maxlength="5" placeholder="Type your guess" />
+        <button id="submit-guess-button">Set Guess</button>
+        <div id="letter-boxes">
+            <!-- Letter boxes will be dynamically created -->
+        </div>
+        <button id="submit-feedback-button">Submit Feedback</button>
+    </div>
+
+    <!-- Control Buttons -->
+    <div id="controls">
+        <button id="start-over-button">Start Over</button>
+        <button id="won-button">I Won!</button>
+    </div>
+
+    <script>
+        const suggestionSpan = document.getElementById("suggestion");
+        const letterBoxes = document.getElementById("letter-boxes");
+        const submitFeedbackButton = document.getElementById("submit-feedback-button");
+        const submitGuessButton = document.getElementById("submit-guess-button");
+        const startOverButton = document.getElementById("start-over-button");
+        const wonButton = document.getElementById("won-button");
+        const userGuessInput = document.getElementById("user-guess");
+
+        // Initialize state
+        let currentGuess = "";
+        let feedback = ["gray", "gray", "gray", "gray", "gray"]; // Initial feedback
+
+        // Create letter boxes based on the current guess
+        function createLetterBoxes() {
+            letterBoxes.innerHTML = ""; // Clear previous boxes
+            for (let i = 0; i < currentGuess.length; i++) {
+                const letterBox = document.createElement("div");
+                letterBox.textContent = currentGuess[i];
+                letterBox.className = `letter-box ${feedback[i]}`;
+                letterBox.addEventListener("click", () => cycleColor(i, letterBox));
+                letterBoxes.appendChild(letterBox);
+            }
+        }
+
+        // Cycle through colors: gray -> yellow -> green
+        function cycleColor(index, letterBox) {
+            const colors = ["gray", "yellow", "green"];
+            let currentColor = feedback[index];
+            let nextColor = colors[(colors.indexOf(currentColor) + 1) % colors.length];
+            feedback[index] = nextColor;
+            letterBox.className = `letter-box ${nextColor}`;
+        }
+
+        // Handle user guess submission
+        function submitGuess() {
+            const userGuess = userGuessInput.value.trim().toLowerCase();
+            if (userGuess.length === 5) {
+                currentGuess = userGuess;
+                feedback = ["gray", "gray", "gray", "gray", "gray"]; // Reset feedback
+                createLetterBoxes();
+                suggestionSpan.textContent = "Make your adjustments below!";
+                userGuessInput.value = ""; // Clear input
+            } else {
+                alert("Please enter a valid 5-letter guess.");
+            }
+        }
+	window.onload = function() {
+		startGame();
+	};
+
+	async function startGame() {
+		const response = await fetch("/start_game", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" }
+		});
+
+    		const data = await response.json();
+    		console.log("Game started:", data.message);  // You can check this in the console
+
+    		// Reset the game state in the frontend
+    		feedback = ["gray", "gray", "gray", "gray", "gray"];
+    		currentGuess = "salet";  // Set the initial guess
+    		suggestionSpan.textContent = currentGuess;  // Update the suggestion text
+    		createLetterBoxes();  // Reset the letter boxes in the UI
+}
+
+        // Handle feedback submission
+        async function submitFeedback() {
+	    suggestionSpan.textContent = "Calculating...";
+            const response = await fetch("/next_guess", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ feedback, currentGuess })
+            });
+            const data = await response.json();
+            currentGuess = data.next_guess;
+            suggestionSpan.textContent = currentGuess;
+            feedback = ["gray", "gray", "gray", "gray", "gray"]; // Reset feedback
+            createLetterBoxes(); // Update the letter boxes
+        }
+
+        // Handle start over
+        function startOver() {
+	    startGame();
+            currentGuess = ""; // Reset guess
+            suggestionSpan.textContent = "salet"; // Reset suggestion
+            feedback = ["gray", "gray", "gray", "gray", "gray"];
+            letterBoxes.innerHTML = ""; // Clear letter boxes
+            submitFeedbackButton.disabled = false; // Re-enable submit feedback
+        }
+
+        // Handle "I Won!"
+        function declareVictory() {
+            suggestionSpan.textContent = "Congratulations!";
+            submitFeedbackButton.disabled = true; // Disable submit button
+        }
+	
+
+        // Event listeners
+        submitGuessButton.addEventListener("click", submitGuess);
+        submitFeedbackButton.addEventListener("click", submitFeedback);
+        startOverButton.addEventListener("click", startOver);
+        wonButton.addEventListener("click", declareVictory);
+    </script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 20px;
+}
+
+form {
+    margin: 20px auto;
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+textarea {
+    resize: none;
+    padding: 10px;
+}
+
+button {
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+#result {
+    margin-top: 20px;
+    font-weight: bold;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 20px;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+#suggested-guess {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+}
+
+#guess-input {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+#letter-boxes {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.letter-box {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2em;
+    font-weight: bold;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    user-select: none;
+}
+
+.letter-box.gray {
+    background-color: #d3d3d3;
+    color: black;
+}
+
+.letter-box.yellow {
+    background-color: #ffd700;
+    color: black;
+}
+
+.letter-box.green {
+    background-color: #32cd32;
+    color: white;
+}
+
+button {
+    padding: 10px 20px;
+    margin: 5px;
+    font-size: 1em;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #ddd;
+}
+
+button:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+}
