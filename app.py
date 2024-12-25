@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify, session
+import os
 
 app = Flask(__name__)
 app.secret_key = 'elliesecretkey'
